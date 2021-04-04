@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "331138879404",
+    "firebase_url": "https://digisign-ffb8f-default-rtdb.firebaseio.com",
+    "project_id": "digisign-ffb8f",
+    "storage_bucket": "digisign-ffb8f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331138879404:android:0bc745fb8dff5f5da2f409",
+        "android_client_info": {
+          "package_name": "com.android.dgsignchatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "331138879404-ve8iaqfpt1g83vedtuf3pcv2mdcftjit.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.dgsignchatapp",
+            "certificate_hash": "21fa2812ff71afca757911e28725105d38fdb2d8"
+          }
+        },
+        {
+          "client_id": "331138879404-7vuu0mtlhnhf1nnabe07mde6omtkq6sk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDX_em4c0Oi4PjXIQyo0a91CzGyaAsYCr0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "331138879404-7vuu0mtlhnhf1nnabe07mde6omtkq6sk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
