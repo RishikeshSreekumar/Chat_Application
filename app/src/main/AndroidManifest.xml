@@ -11,9 +11,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DGsignchatapp">
-        <activity android:name=".ChatRoomActivity"></activity>
-        <activity android:name=".ChatHomeActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".ChatRoomActivity">
+<!--            android:windowSoftInputMode="adjustPan|stateVisible">-->
+        </activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".ChatHomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

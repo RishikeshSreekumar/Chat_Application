@@ -64,18 +64,13 @@ public class ChatRoomActivity extends AppCompatActivity {
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
-    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
-    StorageReference storageReference = firebaseStorage.getReference();
     EditText editText;
     Button bt_send;
     String id, pubkey;
 
     SharedPreferences sharedPreferences;
-    Context context = this;
     SharedPreferences.Editor editor;
     ChatAdapter chatAdapter;
-    Uri downloadUri;
-    String name = "";
 
 
     @Override
@@ -86,7 +81,6 @@ public class ChatRoomActivity extends AppCompatActivity {
         id = getIntent().getStringExtra("id");
         String name = getIntent().getStringExtra("name");
         sharedPreferences = getApplicationContext().getSharedPreferences("digisign.data", MODE_PRIVATE);
-        editor = sharedPreferences.edit();
 
         editText = findViewById(R.id.et_message);
         bt_send = findViewById(R.id.bt_send);
@@ -98,19 +92,21 @@ public class ChatRoomActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(chatAdapter);
 
+        getSupportActionBar().setTitle(name);
+
         databaseReference.child("digisign").child("chat").child(id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 chats.clear();
                 for (DataSnapshot ds: snapshot.getChildren()) {
                     Chat c = ds.getValue(Chat.class);
-                    byte[] publickey;
-                    byte[] signedmess;
+                    byte[] publickey, signedmess;
+                    assert c != null;
                     publickey = Base64.decode(c.getPubkey().getBytes(StandardCharsets.UTF_16), Base64.DEFAULT);
                     signedmess = Base64.decode(c.getSignedMessage().getBytes(StandardCharsets.UTF_16), Base64.DEFAULT);
 
                     X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(publickey);
-                    KeyFactory keyFactory = null;
+                    KeyFactory keyFactory;
                     try {
                         keyFactory = KeyFactory.getInstance("RSA");
                         PublicKey pubKey = keyFactory.generatePublic(pubKeySpec);
@@ -152,6 +148,7 @@ public class ChatRoomActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.demo) {
             item.setChecked(!item.isChecked());
+            editor = sharedPreferences.edit();
             editor.putBoolean("demo", item.isChecked());
             editor.apply();
             chatAdapter.notifyDataSetChanged();
@@ -166,7 +163,6 @@ public class ChatRoomActivity extends AppCompatActivity {
         String message = editText.getText().toString();
         String signed = signMessage(message);
         Chat chat = new Chat(sharedPreferences.getString("name", ""), message, signed);
-        chat.setDownloadUrl(name);
         chat.setPubkey(pubkey);
 
         String key = databaseReference.child("digisign").child("chat").child(id).push().getKey();
@@ -181,24 +177,18 @@ public class ChatRoomActivity extends AppCompatActivity {
             SecureRandom random = new SecureRandom();
             keyPairGenerator.initialize(2048, random);
             KeyPair pair = keyPairGenerator.generateKeyPair();
-            PrivateKey priv = pair.getPrivate();
-            PublicKey pub = pair.getPublic();
+            PrivateKey privateKey = pair.getPrivate();
+            PublicKey publicKey = pair.getPublic();
             Signature dsa = Signature.getInstance("SHA256withRSA");
-            dsa.initSign(priv);
-            byte[] mess = message.getBytes();
-            dsa.update(mess);
+            dsa.initSign(privateKey);
+            dsa.update(message.getBytes());
             byte[] realSig = dsa.sign();
             String signed = new String(Base64.encode(realSig, Base64.DEFAULT), StandardCharsets.UTF_16);
-            byte[] key = pub.getEncoded();
+            byte[] key = publicKey.getEncoded();
             pubkey = new String(Base64.encode(key, Base64.DEFAULT), StandardCharsets.UTF_16);
-            name = getAlphaNumericString(8);
-            StorageReference reference = storageReference.getRoot().child("digisign").child("chat").child(id).child(name).child("key");
-            reference.putBytes(key);
             return signed;
-
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
             e.printStackTrace();
-            Log.i("TAG", "signMessage: " + e.getLocalizedMessage());
         }
         return message;
     }
@@ -207,14 +197,4 @@ public class ChatRoomActivity extends AppCompatActivity {
         return true;
     }
 
-    private String getAlphaNumericString(int n) {
-
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789" + "abcdefghijklmnopqrstuvxyz";
-        StringBuilder sb = new StringBuilder(n);
-        for (int i = 0; i < n; i++) {
-            int index = (int) (AlphaNumericString.length() * Math.random());
-            sb.append(AlphaNumericString.charAt(index));
-        }
-        return sb.toString();
-    }
 }

@@ -12,6 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:background="@drawable/chat_bk"
         android:padding="8dp"
         android:text="Sample Name"
         android:textColor="#000000"

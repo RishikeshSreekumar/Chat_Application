@@ -42,13 +42,7 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = getApplicationContext().getSharedPreferences("digisign.data", MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        if(sharedPreferences.getBoolean("login", false)){
-            Intent i = new Intent(MainActivity.this, ChatHomeActivity.class);
-            startActivity(i);
-        }
-
-        List<AuthUI.IdpConfig> providers = Arrays.asList(
-                new AuthUI.IdpConfig.GoogleBuilder().build());
+        List<AuthUI.IdpConfig> providers = Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build());
 
         findViewById(R.id.bt_login).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
                         RC_SIGN_IN);
             }
         });
-
     }
 
     @Override
@@ -83,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 editor.putBoolean("login", true);
                 editor.apply();
                 Intent i = new Intent(MainActivity.this, ChatHomeActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);
             }
         }
